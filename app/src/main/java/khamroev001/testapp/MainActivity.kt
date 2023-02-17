@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     var qwe = ArrayList<Int>()
     var count = 0
     var c: Boolean = false
-
+var k=0
 
     var index = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,12 +42,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     tests[index].status = false
                 }
                 else -> {
+                    k++
                     if (tests[index].correct_answer == selectedRadioButton.text && !c && index < tests.size) {
                         if (index == tests.size - 1) {
                             c = true
                             tests[index].status = true
                         }
-                        count++
+                        if (!tests[index].point){
+                            count++
+                            tests[index].point=true
+                        }
+
                     }
                 }
             }
@@ -84,31 +89,37 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         finish.setOnClickListener {
-            for (i in 0.. index){
-                println(index)
-                println("AAAAAAAAAAAAAAAAAAAAAAA")
-                println(tests[i].status.toString())
-                if (tests[i].status){
-                }else{
-                    Toast.makeText(this, "NOT ANSWERED ", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
+            if (k>=4){
+                for (i in 0.. index){
+                    println(index)
+                    println("AAAAAAAAAAAAAAAAAAAAAAA")
+                    println(tests[i].status.toString())
+                    if (tests[i].status){
+                    }else{
+                        Toast.makeText(this, "NOT ANSWERED ", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
                 }
-            }
-            val checkedRadioButtonId = answers.checkedRadioButtonId
-            val selectedRadioButton = findViewById<RadioButton>(checkedRadioButtonId)
-            if (tests[index].correct_answer == selectedRadioButton.text && !c && index < tests.size) {
-                if (index == tests.size - 1) {
-                    c = true
-                    tests[index].status = true
+                val checkedRadioButtonId = answers.checkedRadioButtonId
+                val selectedRadioButton = findViewById<RadioButton>(checkedRadioButtonId)
+                if (tests[index].correct_answer == selectedRadioButton.text && !c && index < tests.size) {
+                    if (index == tests.size - 1) {
+                        c = true
+                        tests[index].status = true
+                    }
+                    if (!tests[index].point){
+                        count++
+                        tests[index].point=true
+                    }
                 }
-                count++
+                result.visibility = View.VISIBLE
+                result.text = "${count} / ${tests.size}"
+
+                finish.visibility = View.INVISIBLE
+                restart.visibility = View.VISIBLE
+
+
             }
-            result.visibility = View.VISIBLE
-            result.text = "${count} / ${tests.size}"
-
-            finish.visibility = View.INVISIBLE
-            restart.visibility = View.VISIBLE
-
 
         }
         restart.setOnClickListener {
@@ -160,6 +171,36 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(p0: View?) {
         var btn = findViewById<Button>(p0!!.id)
+
+        val checkedRadioButtonId = answers.checkedRadioButtonId
+        val selectedRadioButton = findViewById<RadioButton>(checkedRadioButtonId)
+        when (answers.checkedRadioButtonId) {
+            -1 -> {
+                Toast.makeText(this, "NOT ANSWERED ", Toast.LENGTH_LONG).show()
+                tests[index].status = false
+            }
+            else -> {
+                k++
+                if (tests[index].correct_answer == selectedRadioButton.text && !c && index < tests.size) {
+                    if (index == tests.size - 1) {
+                        c = true
+                        tests[index].status = true
+                    }
+                    if (!tests[index].point){
+                        count++
+                        tests[index].point=true
+                    }
+                }
+            }
+        }
+
+        if (answers.checkedRadioButtonId != null) {
+            setAnswer(index, answers.checkedRadioButtonId)
+            tests[index].status = true
+        }
+
+
+
         if (answers.checkedRadioButtonId != -1)
             setAnswer(index, answers.checkedRadioButtonId)
         tests[index].status = true
@@ -172,6 +213,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         } else if (index == tests.size - 1) {
             next.visibility = View.GONE
             finish.visibility = View.VISIBLE
+            btn.setBackgroundResource(R.drawable.btn_bg)
+            btn.setTextColor(Color.WHITE)
         }
     }
 

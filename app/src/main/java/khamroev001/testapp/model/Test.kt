@@ -6,5 +6,5 @@ data class Test(var question: String,
            var answer3: String,
            var answer4: String,
            var correct_answer: String,
-var status:Boolean =false) {
+var status:Boolean =false,var point:Boolean =false) {
 }
